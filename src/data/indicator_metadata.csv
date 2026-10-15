@@ -1,0 +1,6 @@
+indicator_id,display_order,section,title,subtitle,chart_type,sort,unit,value_format,footnote_codes
+EDU_BA,1,Education,Bachelor's degree or higher by group,Share of adults age 25 and older,bar,desc,percent,.1f,high_cv;small_sample
+LANG_LEP,2,Language,Limited English proficiency by group,Share of people age 5 and older who speak English less than very well,bar,desc,percent,.1f,small_sample
+INC_MED,3,Income,Median household income by group,Inflation-adjusted dollars,dot,desc,dollars,"$,.0f",small_sample
+POV_RATE,4,Poverty,Poverty rate by group,Share of people below the federal poverty line,bar,desc,percent,.1f,small_sample
+HOUS_BURDEN,5,Housing,Renter housing cost burden by group,Share of renter households spending 30 percent or more of income on housing,bar,alpha,percent,.1f,small_sample

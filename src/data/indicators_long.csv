@@ -1,0 +1,26 @@
+release,indicator_id,fig_2022,table,group_label,category,estimate,se,moe90,cv,n_unweighted,weighted_n,universe,source_var,data_source,suppressed,note_code
+2024_5yr,POV_RATE,Figure 6.3,Asian,Asian (overall),Below poverty line,9.8,0.12,0.20,1.2,905000,19200000,Persons with poverty status determined,POVERTY,ipums_raced,FALSE,
+2024_5yr,POV_RATE,Figure 6.3,Asian,Chinese,Below poverty line,10.6,0.28,0.46,2.6,250000,5300000,Persons with poverty status determined,POVERTY,ipums_raced,FALSE,
+2024_5yr,POV_RATE,Figure 6.3,Asian,Hmong,Below poverty line,14.9,0.85,1.40,5.7,15500,330000,Persons with poverty status determined,POVERTY,ipums_raced,FALSE,
+2024_5yr,POV_RATE,Figure 6.3,NHPI,Samoan,Below poverty line,17.3,1.05,1.73,6.1,2900,62000,Persons with poverty status determined,POVERTY,ipums_raced,FALSE,
+2024_5yr,POV_RATE,Figure 6.3,NHPI,Marshallese,Below poverty line,34.6,4.90,8.06,14.2,1100,24000,Persons with poverty status determined,POVERTY,ipums_raced,FALSE,small_sample
+2024_5yr,INC_MED,Figure 4.1,Asian,Asian (overall),Median household income (dollars),112500,640,1052.80,0.6,330000,6900000,Households,HHINCOME,ipums_raced,FALSE,
+2024_5yr,INC_MED,Figure 4.1,Asian,Chinese,Median household income (dollars),108200,1450,2385.25,1.3,92000,1950000,Households,HHINCOME,ipums_raced,FALSE,
+2024_5yr,INC_MED,Figure 4.1,Asian,Hmong,Median household income (dollars),79800,2900,4770.50,3.6,3900,82000,Households,HHINCOME,ipums_raced,FALSE,
+2024_5yr,INC_MED,Figure 4.1,NHPI,Samoan,Median household income (dollars),76400,4100,6744.50,5.4,640,13500,Households,HHINCOME,ipums_raced,FALSE,
+2024_5yr,INC_MED,Figure 4.1,NHPI,Marshallese,Median household income (dollars),48200,5900,9705.50,12.2,260,5600,Households,HHINCOME,ipums_raced,FALSE,small_sample
+2024_5yr,LANG_LEP,Figure 3.2,Asian,Asian (overall),Limited English proficiency,30.8,0.21,0.35,0.7,905000,19200000,Persons age 5 and older,SPEAKENG,ipums_raced,FALSE,
+2024_5yr,LANG_LEP,Figure 3.2,Asian,Chinese,Limited English proficiency,41.5,0.55,0.90,1.3,250000,5300000,Persons age 5 and older,SPEAKENG,ipums_raced,FALSE,
+2024_5yr,LANG_LEP,Figure 3.2,Asian,Hmong,Limited English proficiency,33.0,1.40,2.30,4.2,15500,330000,Persons age 5 and older,SPEAKENG,ipums_raced,FALSE,
+2024_5yr,LANG_LEP,Figure 3.2,NHPI,Samoan,Limited English proficiency,12.9,1.30,2.14,10.1,2900,62000,Persons age 5 and older,SPEAKENG,ipums_raced,FALSE,
+2024_5yr,LANG_LEP,Figure 3.2,NHPI,Marshallese,Limited English proficiency,38.0,5.50,9.05,14.5,1100,24000,Persons age 5 and older,SPEAKENG,ipums_raced,FALSE,small_sample
+2024_5yr,HOUS_BURDEN,Figure 5.4,Asian,Asian (overall),Housing cost burdened,48.5,0.35,0.58,0.7,120000,2500000,Renter households,RENTGRS_HHINCOME,ipums_raced,FALSE,
+2024_5yr,HOUS_BURDEN,Figure 5.4,Asian,Chinese,Housing cost burdened,47.8,0.80,1.32,1.7,31000,640000,Renter households,RENTGRS_HHINCOME,ipums_raced,FALSE,
+2024_5yr,HOUS_BURDEN,Figure 5.4,Asian,Hmong,Housing cost burdened,44.2,2.60,4.28,5.9,1400,29000,Renter households,RENTGRS_HHINCOME,ipums_raced,FALSE,
+2024_5yr,HOUS_BURDEN,Figure 5.4,NHPI,Samoan,Housing cost burdened,51.0,4.20,6.91,8.2,300,6500,Renter households,RENTGRS_HHINCOME,ipums_raced,FALSE,
+2024_5yr,HOUS_BURDEN,Figure 5.4,NHPI,Marshallese,Housing cost burdened,52.0,6.10,10.03,11.7,150,3400,Renter households,RENTGRS_HHINCOME,ipums_raced,FALSE,small_sample
+2024_5yr,EDU_BA,Figure 2.5,Asian,Asian (overall),Bachelor's degree or higher,56.0,0.25,0.41,0.4,640000,13600000,Persons age 25 and older,EDUC,ipums_raced,FALSE,
+2024_5yr,EDU_BA,Figure 2.5,Asian,Chinese,Bachelor's degree or higher,58.3,0.50,0.82,0.9,180000,3800000,Persons age 25 and older,EDUC,ipums_raced,FALSE,
+2024_5yr,EDU_BA,Figure 2.5,Asian,Hmong,Bachelor's degree or higher,31.1,1.60,2.63,5.1,9500,200000,Persons age 25 and older,EDUC,ipums_raced,FALSE,
+2024_5yr,EDU_BA,Figure 2.5,NHPI,Samoan,Bachelor's degree or higher,17.4,1.70,2.80,9.8,1700,36000,Persons age 25 and older,EDUC,ipums_raced,FALSE,
+2024_5yr,EDU_BA,Figure 2.5,NHPI,Marshallese,Bachelor's degree or higher,6.2,2.10,3.45,33.9,650,14000,Persons age 25 and older,EDUC,ipums_raced,TRUE,high_cv
