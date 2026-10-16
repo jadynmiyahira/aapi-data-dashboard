@@ -1,7 +1,6 @@
 # Hello Framework
 # git practice
 # more git practice to commit
-# even more git practice to commit
 
 This is an [Observable Framework](https://observablehq.com/framework/) app. To install the required dependencies, run:
 
