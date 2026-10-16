@@ -1,5 +1,6 @@
 ---
 title: AANHPI indicators (example)
+style: "style.css"
 ---
 
 # AANHPI indicators (example data)
