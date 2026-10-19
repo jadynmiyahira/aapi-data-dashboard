@@ -114,10 +114,7 @@ hr {
   font-size: 14vw;
   font-weight: 900;
   line-height: 1;
-  background: linear-gradient(30deg, #ff4f00, #103f48);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #103f48;
 }
 
 .hero h2 {
