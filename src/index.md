@@ -3,6 +3,10 @@ theme: air
 toc: false
 ---
 
+<div class="top-logo">
+  <img src="./assets/AAPI-Data-Horizontal-Logo+Tag-Full-Color.png" alt="AAPI Data logo">
+</div>
+
 <div class="hero">
   <h1>State of AANHPIs 2026 Dashboard</h1>
   <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
@@ -95,6 +99,17 @@ hr {
   background: #ffffff;
   border: 1px solid #7fb6a4;
   border-top: 4px solid #7fb6a4;
+}
+
+.top-logo {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.top-logo img {
+  height: 60px;
+  width: auto;
+  max-width: 100%;
 }
 
 .hero {
