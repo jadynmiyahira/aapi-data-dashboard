@@ -1,0 +1,9 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+
+:root {
+  --sans-serif: "Inter", system-ui, sans-serif;  /* the font used for text */
+  --theme-foreground-focus: #103f48;             /* link and accent color */
+}
+
+h1, h2, h3 { font-weight: 600; }

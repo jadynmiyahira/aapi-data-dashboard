@@ -18,7 +18,7 @@ toc: false
       y: {grid: true, label: "Awesomeness"},
       marks: [
         Plot.ruleY([0]),
-        Plot.lineY(aapl, {x: "Date", y: "Close", tip: true})
+        Plot.lineY(aapl, {x: "Date", y: "Close", stroke: "#103f48", tip: true})
       ]
     }))
   }</div>
@@ -29,7 +29,7 @@ toc: false
       grid: true,
       x: {label: "Body mass (g)"},
       y: {label: "Flipper length (mm)"},
-      color: {legend: true},
+      color: {legend: true, range: ["#103f48", "#7fb6a4", "#ff4f00"]},
       marks: [
         Plot.linearRegressionY(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species"}),
         Plot.dot(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species", tip: true})
@@ -70,6 +70,33 @@ Here are some ideas of things you could try…
 
 <style>
 
+:root {
+  --theme-background: #ffffff;
+  --theme-background-alt: #ffffff;
+  --theme-foreground: #103f48;
+  --theme-foreground-focus: #ff4f00;
+  --theme-foreground-muted: #103f48;
+}
+
+body {
+  background: #ffffff;
+  color: #103f48;
+}
+
+a, a:visited {
+  color: #ff4f00;
+}
+
+hr {
+  border-color: #7fb6a4;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #7fb6a4;
+  border-top: 4px solid #7fb6a4;
+}
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -87,10 +114,7 @@ Here are some ideas of things you could try…
   font-size: 14vw;
   font-weight: 900;
   line-height: 1;
-  background: linear-gradient(30deg, var(--theme-foreground-focus), currentColor);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #103f48;
 }
 
 .hero h2 {
