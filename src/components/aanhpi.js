@@ -153,6 +153,31 @@ export function footnotes(meta, rows) {
   if (missing) lines.push("Some alone-or-in-combination rows are not yet in the data pull.");
   const {status} = basisCheck(rows);
   if (status !== "single") lines.push("Rows use different race definitions; see labels.");
+  // Cautions written in the source workbook. They do not set the flag, but they
+  // are the analyst's warning about a specific estimate, so show them.
+  const legacy = new Map();
+  for (const d of rows) if (d.legacy_flag) legacy.set(`${d.entity_label}: ${d.legacy_flag}`, true);
+  for (const l of legacy.keys()) lines.push(`Source note — ${l}`);
   lines.push(`Source: ${meta.source_system.join("; ")}. ${meta.data_vintage.join("; ")}.`);
   return lines;
+}
+
+/** Estimate series in a panel, in source column order, with their labels and units. */
+export function seriesList(rows, {role = "estimate"} = {}) {
+  const out = new Map();
+  for (const d of rows) {
+    if (role && d.series_role !== role) continue;
+    if (!out.has(d.series_slug)) out.set(d.series_slug, {slug: d.series_slug, label: d.series_label, unit: d.unit, value_type: d.value_type});
+  }
+  return [...out.values()];
+}
+
+/** Format a number for display according to its unit. */
+export function formatValue(v, unit) {
+  if (v == null || v === "") return "";
+  if (typeof v !== "number") return String(v);
+  if (unit === "percent") return `${v.toLocaleString("en-US", {maximumFractionDigits: 1, minimumFractionDigits: 1})}%`;
+  if (unit === "usd") return v.toLocaleString("en-US", {style: "currency", currency: "USD", maximumFractionDigits: 0});
+  if (unit === "count") return Math.round(v).toLocaleString("en-US");
+  return v.toLocaleString("en-US", {maximumFractionDigits: 2});
 }

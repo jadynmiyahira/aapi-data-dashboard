@@ -7,11 +7,14 @@
 // Data-quality warnings (placeholders, mixed bases, missing pulls) are printed to
 // stderr and also stored in the output under `warnings`, so pages can show them.
 
-import {readFileSync} from "node:fs";
+import {existsSync, readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {csvParse} from "d3-dsv";
 
 const SOURCE = "aanhpi2026_long_all.csv";
+// Optional. If present, its figure_note, subgroup_footnote, chart_type and
+// figure_id_status are attached to each panel. Missing file = warning, not error.
+const METADATA = "aanhpi2026_figure_metadata.csv";
 const text = readFileSync(fileURLToPath(new URL(`./${SOURCE}`, import.meta.url)), "utf-8");
 const raw = csvParse(text.replace(/^﻿/, ""));
 
@@ -97,13 +100,39 @@ for (const d of rows) {
   p.first_order = Math.min(p.first_order, d.source_row_order);
 }
 
+// Figure metadata, joined on figure_id + figure_title (the only shared key).
+const metaPath = fileURLToPath(new URL(`./${METADATA}`, import.meta.url));
+const metaByKey = new Map();
+if (existsSync(metaPath)) {
+  for (const m of csvParse(readFileSync(metaPath, "utf-8").replace(/^\uFEFF/, ""))) {
+    const k = `${m.figure_id}|${m.figure_title}`;
+    const prev = metaByKey.get(k);
+    // Some titles cover two source blocks (2.3b, 4.2a, 4.2b): keep every distinct note.
+    const merge = (a, b) => [...new Set([a, b].filter(Boolean))].join(" ");
+    metaByKey.set(k, prev ? {
+      figure_note: merge(prev.figure_note, m.figure_note),
+      subgroup_footnote: merge(prev.subgroup_footnote, m.subgroup_footnote),
+      chart_type: merge(prev.chart_type, m.chart_type),
+      figure_id_status: merge(prev.figure_id_status, m.figure_id_status)
+    } : {figure_note: m.figure_note, subgroup_footnote: m.subgroup_footnote, chart_type: m.chart_type, figure_id_status: m.figure_id_status});
+  }
+} else {
+  warnings.push({panel_key: "", type: "metadata_file_missing", detail: `${METADATA} not found in src/data; figure notes not attached`});
+}
+
 const figures = [...panels.values()].map((p) => {
   const bases = [...p.race_bases].sort();
   // README: source_defined rows must not share a chart with ACS rows.
   const basis_status = bases.length <= 1 ? "single"
     : bases.includes("source_defined") ? "incompatible"
     : "mixed_label_required";
-  const out = {...p, data_vintage: [...p.data_vintage], source_system: [...p.source_system], race_bases: bases, basis_status};
+  const md = metaByKey.get(p.panel_key);
+  const out = {
+    ...p, data_vintage: [...p.data_vintage], source_system: [...p.source_system], race_bases: bases, basis_status,
+    figure_note: md?.figure_note ?? "", subgroup_footnote: md?.subgroup_footnote ?? "",
+    chart_type: md?.chart_type ?? "", figure_id_status: md?.figure_id_status ?? ""
+  };
+  if (metaByKey.size && !md) warnings.push({panel_key: p.panel_key, type: "no_metadata_row", detail: "No matching row in figure metadata"});
   if (out.placeholder_title) warnings.push({panel_key: out.panel_key, type: "placeholder_title", detail: out.figure_title});
   if (basis_status !== "single") warnings.push({panel_key: out.panel_key, type: `basis_${basis_status}`, detail: bases.join(" + ")});
   if (out.n_missing_from_pull) warnings.push({panel_key: out.panel_key, type: "missing_from_pull", detail: `${out.n_missing_from_pull} cells`});
