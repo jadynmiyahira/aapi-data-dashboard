@@ -46,6 +46,7 @@ const data = await FileAttachment("data/aanhpi.json").json();
 //   title    - a title to show instead of a placeholder title in the data
 //   bar      - the data series (column) to draw as bars
 //   barLabel - the label under the bar chart
+//   mark     - "dot" to draw a dot plot instead of bars (leave out for bars)
 //   sortBy   - order bars by a different series (here, 2024 population)
 //   suffix   - for "top 5 states" tables: which measure to show
 //   total    - for "top 5 states" tables: pattern for the group-size column
@@ -53,7 +54,7 @@ const data = await FileAttachment("data/aanhpi.json").json();
 const CH1 = {
   "1.1": {
     title: "Population by race/ethnicity, alone or in combination, 2010, 2020 and 2024 (provisional title)",
-    bar: "1_1_change_2020_2024", barLabel: "Change, 2020–2024 (%)"
+    bar: "1_1_change_2020_2024", barLabel: "Change, 2020–2024 (%)", mark: "dot"
   },
   "1.2": {
     title: "Population by race/ethnicity, race alone, 2010, 2020 and 2024 (provisional title)",
@@ -90,7 +91,7 @@ for (const id of ["1.1", "1.2"]) {
   display(tryFigure(id, () => {
     const meta = figureMeta(data, id), rows = panel(data, id);
     return figureCard(meta, rows, {title: c.title, body: [
-    barChart(rows, {series: c.bar, label: c.barLabel, width}),
+    barChart(rows, {series: c.bar, label: c.barLabel, mark: c.mark, width}),
     dataTable(rows)
   ]});
   }));

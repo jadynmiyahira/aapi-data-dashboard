@@ -36,8 +36,9 @@ export function figureCard(meta, rows, {title, body = []} = {}) {
  * Horizontal bar chart of one series.
  *  sortBy: another series slug to order bars by (descending); default is the value itself.
  *  include: row filter; default drops benchmarks and totals.
+ *  mark: "bar" (default) or "dot" for a dot plot (one dot per group at its value).
  */
-export function barChart(rows, {series, sortBy, include = notBenchmark, width = 640, label} = {}) {
+export function barChart(rows, {series, sortBy, include = notBenchmark, width = 640, label, mark = "bar"} = {}) {
   const meta = seriesList(rows).find((s) => s.slug === series);
   if (!meta) throw new Error(`barChart: series ${series} is not in this panel`);
   const bars = chartRows(rows, series).filter(include);
@@ -64,7 +65,9 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
   // (right of positive bars, left of negative ones) instead of being clipped.
   const marginLeft = Math.min(320, 12 + longest * 6.2), marginRight = 20;
   const inner = Math.max(100, width - marginLeft - marginRight);
-  const labelPx = (D) => (D.length ? 10 + 6.5 * Math.max(...D.map((d) => valueLabel(d).length)) : 0);
+  // Gap between the end of a bar (or the edge of a dot) and its label.
+  const dotR = 5, gap = mark === "dot" ? dotR + 4 : 5;
+  const labelPx = (D) => (D.length ? 5 + gap + 6.5 * Math.max(...D.map((d) => valueLabel(d).length)) : 0);
   const lo = Math.min(0, ...bars.map((d) => d.value)), hi = Math.max(0, ...bars.map((d) => d.value));
   const padL = lo < 0 ? labelPx(bars.filter((d) => d.value < 0)) / inner : 0;
   const padR = hi > 0 ? labelPx(bars.filter((d) => d.value >= 0)) / inner : 0;
@@ -77,8 +80,15 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
     x: {label: label ?? meta.label, grid: true, domain: [lo - padL * span, hi + padR * span], tickFormat: meta.unit === "percent" ? (v) => `${v}%` : "~s"},
     y: {label: null, domain: order, tickFormat: yLabel},
     marks: [
-      Plot.barX(bars, {
+      // Dot plots get a thin line from 0 to each dot (a "lollipop"), drawn under the dot.
+      mark === "dot" ? Plot.ruleY(bars, {
+        y: "row_id", x1: 0, x2: "value", strokeWidth: 2,
+        stroke: (d) => (d.value < 0 ? "var(--aanhpi-bar-negative, var(--theme-red, #c0392b))" : "var(--aanhpi-bar, var(--theme-foreground-focus, #3b5fc0))"),
+        strokeOpacity: (d) => (d.flag === "caution" ? 0.45 : 1)
+      }) : null,
+      (mark === "dot" ? Plot.dot : Plot.barX)(bars, {
         x: "value", y: "row_id",
+        ...(mark === "dot" ? {r: dotR} : {}),
         // A page can set --aanhpi-bar / --aanhpi-bar-negative in its styles to recolor the bars.
         fill: (d) => (d.value < 0 ? "var(--aanhpi-bar-negative, var(--theme-red, #c0392b))" : "var(--aanhpi-bar, var(--theme-foreground-focus, #3b5fc0))"),
         fillOpacity: (d) => (d.flag === "caution" ? 0.45 : 1)
@@ -86,10 +96,10 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
       // Value labels: dx and textAnchor must be constants, so positive and negative
       // bars get separate marks (label right of the bar end vs. left of it).
       Plot.text(bars.filter((d) => d.value >= 0), {
-        x: "value", y: "row_id", dx: 5, textAnchor: "start", text: valueLabel
+        x: "value", y: "row_id", dx: gap, textAnchor: "start", text: valueLabel
       }),
       Plot.text(bars.filter((d) => d.value < 0), {
-        x: "value", y: "row_id", dx: -5, textAnchor: "end", text: valueLabel
+        x: "value", y: "row_id", dx: -gap, textAnchor: "end", text: valueLabel
       }),
       Plot.tip(bars, Plot.pointerY({
         x: "value", y: "row_id",
