@@ -1,23 +1,47 @@
-// Observable Framework data loader.
-// Reads the long file (src/data/aanhpi2026_long_all.csv), validates it, types the
-// values, and writes one JSON file the pages load with FileAttachment("data/aanhpi.json").
+// =============================================================================
+// WHAT THIS FILE DOES (plain-language summary)
+// -----------------------------------------------------------------------------
+// This is the "data loader" for the 2026 State of AANHPIs dashboard. It runs
+// automatically every time the site is built, before any page is shown.
+//
+// In short, it:
+//   1. Opens the main spreadsheet of numbers (aanhpi2026_long_all.csv).
+//   2. Checks that the spreadsheet is complete and correctly formatted.
+//   3. Converts text like "12.5" into real numbers the charts can use.
+//   4. Groups the rows into figures/tables ("panels") and counts how many
+//      values each one has, how many are suppressed, etc.
+//   5. Writes a list of data-quality warnings for the team to review
+//      (shown on the "Data check" page).
+//   6. Saves everything as one file, aanhpi.json, that every page reads.
 //
 // To update the dashboard when new data arrives: replace the CSV and rebuild.
-// The build FAILS (non-zero exit) on structural errors so a broken file never ships.
-// Data-quality warnings (placeholders, mixed bases, missing pulls) are printed to
-// stderr and also stored in the output under `warnings`, so pages can show them.
+// If the spreadsheet has a serious problem (missing columns, text where a
+// number should be, duplicate rows), the build STOPS on purpose so a broken
+// file is never published. Smaller issues are recorded as warnings instead.
+//
+// Technical note: the build fails with a non-zero exit on structural errors.
+// Warnings (placeholders, mixed bases, missing pulls) are printed to stderr and
+// also stored in the output under `warnings`, so pages can show them.
+// =============================================================================
 
+// Tools for reading files and parsing spreadsheet (CSV) text.
 import {existsSync, readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {csvParse} from "d3-dsv";
 
+// ---- Step 0: Open the spreadsheet -------------------------------------------
+// The name of the main data file. When a new release arrives with a different
+// file name, change it here.
 const SOURCE = "aanhpi2026_long_all.csv";
 // Optional. If present, its figure_note, subgroup_footnote, chart_type and
 // figure_id_status are attached to each panel. Missing file = warning, not error.
 const METADATA = "aanhpi2026_figure_metadata.csv";
+// Read the spreadsheet and turn it into a list of rows (one per number).
 const text = readFileSync(fileURLToPath(new URL(`./${SOURCE}`, import.meta.url)), "utf-8");
 const raw = csvParse(text.replace(/^﻿/, ""));
 
+// ---- Rules the spreadsheet must follow --------------------------------------
+// Every column the spreadsheet must contain. If any are missing, the build stops.
 const REQUIRED = [
   "chapter_num", "chapter_name", "indicator_id", "figure_id", "figure_type", "figure_title",
   "entity_type", "entity_label", "source_entity_label", "crosswalk_status", "race_basis",
@@ -27,18 +51,26 @@ const REQUIRED = [
   "flag_scope", "flag_basis", "flag_note", "source_workbook", "source_tab", "source_cell",
   "source_system", "data_vintage", "row_note"
 ];
+// Kinds of values that must be numbers (as opposed to text, like a state name).
 const NUMERIC_TYPES = new Set(["count", "percent", "number", "ratio", "years", "currency_usd"]);
+// The only data-quality flags allowed. "caution" = small sample, use with care;
+// "restrict" = suppressed, the number must not be shown.
 const KNOWN_FLAGS = new Set(["", "ok", "caution", "restrict", "not_assessed", "not_applicable"]);
+// Titles that are still placeholders (e.g. "Figure X") and need a real title.
 const PLACEHOLDER_TITLE = /^(Figure X|Figure \[X\]|Figure TBD|Table)\b/;
 
+// Two running lists: "errors" stop the build; "warnings" are for review only.
 const errors = [];
 const warnings = [];
 
-// 1. Columns
+// ---- Step 1: Check that every required column is present --------------------
 const missingCols = REQUIRED.filter((c) => !raw.columns.includes(c));
 if (missingCols.length) errors.push(`Missing columns: ${missingCols.join(", ")}`);
 
-// 2. Type every row
+// ---- Step 2: Clean up every row ---------------------------------------------
+// For each row: turn number-text into real numbers, make sure the flag is one
+// we recognize, and make sure suppressed ("restrict") cells really are blank.
+// "Line N" in error messages matches the line number in the spreadsheet.
 const rows = raw.map((d, i) => {
   const numeric = NUMERIC_TYPES.has(d.value_type);
   let value = d.value === "" ? null : d.value;
@@ -60,13 +92,17 @@ const rows = raw.map((d, i) => {
     // A panel is one table inside a figure. Some figure_ids hold several
     // (5.6a(i)-(iii), 2.1b, 2.5a, 2.5b, 5.3d, 5.6d), so the title is part of the key.
     panel_key: `${d.figure_id}|${d.figure_title}`,
+    // True when the source pull did not include this value.
     missing_from_pull: d.row_note.startsWith("MISSING_FROM_PULL"),
-    // The only rows a chart should plot.
+    // The only rows a chart should plot: actual estimates (not sample sizes or
+    // labels) that have a number and are not suppressed.
     chartable: d.series_role === "estimate" && typeof value === "number" && d.flag !== "restrict"
   };
 });
 
-// 3. Key uniqueness: one value per panel x row x series x strata
+// ---- Step 3: Check for duplicate rows ---------------------------------------
+// Each number should appear exactly once (one value per panel x row x series
+// x strata). If the same number appears twice, the build stops.
 const seen = new Map();
 for (const [i, d] of rows.entries()) {
   const k = [d.panel_key, d.row_id, d.series_slug, d.stratum_1_val, d.stratum_2_val].join("\u0001");
@@ -74,7 +110,10 @@ for (const [i, d] of rows.entries()) {
   else seen.set(k, i);
 }
 
-// 4. Panel index + data-quality warnings
+// ---- Step 4: Build a summary of each figure/table ("panel") -----------------
+// Walk through every row and tally, per panel: how many values it has, how
+// many can be charted, how many are suppressed or missing, which data years
+// and sources it uses, and whether its title is still a placeholder.
 const panels = new Map();
 for (const d of rows) {
   let p = panels.get(d.panel_key);
@@ -100,7 +139,9 @@ for (const d of rows) {
   p.first_order = Math.min(p.first_order, d.source_row_order);
 }
 
-// Figure metadata, joined on figure_id + figure_title (the only shared key).
+// ---- Step 5: Attach figure notes and footnotes (optional file) --------------
+// If a separate metadata spreadsheet exists, add its notes and footnotes to
+// each panel. Matched on figure_id + figure_title (the only shared key).
 const metaPath = fileURLToPath(new URL(`./${METADATA}`, import.meta.url));
 const metaByKey = new Map();
 if (existsSync(metaPath)) {
@@ -120,6 +161,12 @@ if (existsSync(metaPath)) {
   warnings.push({panel_key: "", type: "metadata_file_missing", detail: `${METADATA} not found in src/data; figure notes not attached`});
 }
 
+// ---- Step 6: Finalize each panel and record data-quality warnings -----------
+// Checks whether a panel mixes different ways of defining race (for example
+// "race alone" vs. "alone or in combination"), then adds a warning for any
+// placeholder title, mixed race definitions, missing values, or group-name
+// mappings that still need sign-off. Panels are then sorted by chapter and
+// figure number.
 const figures = [...panels.values()].map((p) => {
   const bases = [...p.race_bases].sort();
   // README: source_defined rows must not share a chart with ACS rows.
@@ -140,14 +187,20 @@ const figures = [...panels.values()].map((p) => {
   return out;
 }).sort((a, b) => a.chapter_num - b.chapter_num || a.figure_id.localeCompare(b.figure_id, "en", {numeric: true}) || a.first_order - b.first_order);
 
+// ---- Step 7: Stop if there were serious errors -------------------------------
+// Prints up to 50 errors so whoever is updating the data can fix them.
 if (errors.length) {
   process.stderr.write(`\n${SOURCE}: ${errors.length} error(s), build stopped.\n${errors.slice(0, 50).join("\n")}\n`);
   process.exit(1);
 }
 
+// Print a one-line summary during the build (row count, panel count, warnings).
 const counts = warnings.reduce((m, w) => ((m[w.type] = (m[w.type] ?? 0) + 1), m), {});
 process.stderr.write(`${SOURCE}: ${rows.length} values, ${figures.length} panels. Warnings: ${JSON.stringify(counts)}\n`);
 
+// ---- Step 8: Save the result -------------------------------------------------
+// To keep the file small (so pages load faster), details shared by a whole
+// panel, like its title, are stored once per panel rather than on every row.
 // Panel-level fields live once in `figures`; dropping them from each row roughly
 // halves the file. Look them up with figureMeta() in components/aanhpi.js.
 const PANEL_FIELDS = ["chapter_name", "figure_type", "figure_title", "indicator_id",
@@ -158,6 +211,8 @@ const slimRows = rows.map((d) => {
   return r;
 });
 
+// Write the final aanhpi.json: the source file name, when it was built, the
+// panel summaries, the warnings list, and all the individual values.
 process.stdout.write(JSON.stringify({
   source_file: SOURCE,
   built_at: new Date().toISOString(),

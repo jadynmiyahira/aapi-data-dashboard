@@ -3,7 +3,26 @@ title: "Chapter 1: Demographics and Population"
 toc: true
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  Chapter 1 of the dashboard: Demographics and Population.
+  The page:
+    1. Loads the cleaned AANHPI data (aanhpi.json, built by
+       src/data/aanhpi.json.js).
+    2. Lists which figures belong to Chapter 1 and which number to chart for
+       each (the settings block below).
+    3. Draws each figure as a card: a title, a bar chart and/or a table, and
+       footnotes about data quality.
+    4. Warns at the bottom if the data has a Chapter 1 figure this page does
+       not show yet.
+  Notes like this one, and lines starting with //, are for people reading the
+  code. They do not appear on the website.
+-->
+
 ```js
+// Load the shared helper tools (from src/components/) that find a figure in the
+// data and draw its cards, bar charts and tables. Then load the data itself.
 import {panel, figureMeta} from "./components/aanhpi.js";
 import {figureCard, barChart, dataTable, rankTable, tryFigure, chartStyles} from "./components/charts.js";
 const data = await FileAttachment("data/aanhpi.json").json();
@@ -15,6 +34,14 @@ const data = await FileAttachment("data/aanhpi.json").json();
 // Series names in the long file contain years (for example 1_1_change_2020_2024),
 // so they change each release. Check them on the Data check page and update here.
 // Titles below are used only where the data file has a placeholder title.
+//
+// What each setting means:
+//   title    - a title to show instead of a placeholder title in the data
+//   bar      - the data series (column) to draw as bars
+//   barLabel - the label under the bar chart
+//   sortBy   - order bars by a different series (here, 2024 population)
+//   suffix   - for "top 5 states" tables: which measure to show
+//   total    - for "top 5 states" tables: pattern for the group-size column
 // ---------------------------------------------------------------------------
 const CH1 = {
   "1.1": {
@@ -36,13 +63,21 @@ const CH1 = {
 };
 ```
 
+<!-- Apply the shared look (fonts, spacing, colors) for the figure cards. -->
+
 ${chartStyles}
+
+<!-- Intro line on the page, naming the data file the figures came from. -->
 
 Figures in this chapter come from `${data.source_file}`. Values flagged * rest on 25–99 unweighted cases.
 
 ## Population by race and ethnicity
 
 ```js
+// Figures 1.1 and 1.2: for each one, look up its details and rows in the data,
+// then draw a card with a bar chart and the full data table underneath.
+// tryFigure means that if one figure has a problem (for example a renamed
+// series), the page shows a short message for that figure instead of breaking.
 for (const id of ["1.1", "1.2"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -58,6 +93,8 @@ for (const id of ["1.1", "1.2"]) {
 ## Detailed Asian and NHPI national origin
 
 ```js
+// Figures 1.3a (Asian) and 1.3c (NHPI): each detailed group's share of the
+// total, as a bar chart plus the data table.
 for (const id of ["1.3a", "1.3c"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -71,6 +108,8 @@ for (const id of ["1.3a", "1.3c"]) {
 ```
 
 ```js
+// Figures 1.3b (Asian) and 1.3d (NHPI): percent change 2020–2024 for each
+// detailed group, with bars ordered by 2024 population size, plus the table.
 for (const id of ["1.3b", "1.3d"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -86,6 +125,8 @@ for (const id of ["1.3b", "1.3d"]) {
 ## Where groups live
 
 ```js
+// Figures 1.4a–c and 1.5: "top 5 states" tables showing where each group
+// lives (share of the group in each state) or is growing fastest.
 for (const id of ["1.4a", "1.4b", "1.4c", "1.5"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -99,6 +140,8 @@ for (const id of ["1.4a", "1.4b", "1.4c", "1.5"]) {
 
 ```js
 // Safety net: any chapter 1 table in a future data file that this page does not show.
+// If the data has a Chapter 1 figure that is not in the settings block at the
+// top, show a warning listing it. If everything is shown, display nothing.
 const shown = new Set(Object.keys(CH1));
 const unshown = data.figures.filter((f) => f.chapter_num === 1 && !shown.has(f.figure_id));
 display(unshown.length

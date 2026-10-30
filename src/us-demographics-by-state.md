@@ -4,15 +4,34 @@ title: U.S. demographics by state
 toc: false
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  Lets the reader pick a state and see how its population breaks down by race
+  and Hispanic origin, compared with the U.S. as a whole (Census Bureau
+  estimate for July 1, 2025). The page has:
+    1. A drop-down menu to choose a state (starts on California).
+    2. Four summary cards: the state's population and its three largest groups.
+    3. A bar chart of each group's share of the state, with a thin line
+       marking the U.S. share for comparison.
+    4. A table with the exact numbers.
+  Everything updates automatically when a different state is chosen.
+  The data is prepared by src/data/us-race-by-state.csv.js.
+-->
+
 # U.S. demographics by state
 
 Resident population, July 1, 2025. Source: [U.S. Census Bureau, Vintage 2025 population estimates](https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/state/asrh/).
 
 ```js
+// Load the population table (one row per state and race/ethnicity group).
 const raceByState = FileAttachment("data/us-race-by-state.csv").csv({typed: true});
 ```
 
 ```js
+// Prepare lists and national figures used throughout the page: the list of
+// states (A–Z) for the menu, the group order, the U.S. total, each group's
+// U.S. share, and number formats ("1,234,567" and "12.3%").
 const states = d3.sort(new Set(raceByState.map((d) => d.state)));
 const groups = [...new Set(raceByState.map((d) => d.group))]; // fixed order, largest nationally first
 const usTotal = d3.sum(raceByState, (d) => d.population);
@@ -22,16 +41,22 @@ const pct = d3.format(".1%");
 ```
 
 ```js
+// The drop-down menu for choosing a state.
 const state = view(Inputs.select(states, {label: "State", value: "California"}));
 ```
 
 ```js
+// Keep only the chosen state's rows and attach the U.S. share to each group.
+// Also work out the state's total and its three largest groups (for the cards).
 const selected = raceByState
   .filter((d) => d.state === state)
   .map((d) => ({...d, usShare: usShare.get(d.group)}));
 const total = d3.sum(selected, (d) => d.population);
 const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
 ```
+
+<!-- Summary cards: the state's population (in millions or thousands) and its
+     share of the U.S., then its three largest groups. -->
 
 <div class="grid grid-cols-4">
   <div class="card">
@@ -45,6 +70,10 @@ const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
     <span class="muted">${fmt(d.population)} · U.S. ${pct(d.usShare)}</span>
   </div>`)}
 </div>
+
+<!-- Bar chart: each group's share of the chosen state (bars), with a thin
+     vertical line showing the U.S. share for comparison. Hovering shows the
+     population and both shares. Resizes to fit the screen. -->
 
 <div class="card">
   ${resize((width) => Plot.plot({
@@ -92,6 +121,8 @@ const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
     ]
   }))}
 </div>
+
+<!-- Data table: exact population, state share and U.S. share for every group. -->
 
 <div class="card" style="padding: 0;">
   ${Inputs.table(selected, {

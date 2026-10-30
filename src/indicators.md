@@ -3,6 +3,20 @@ title: AANHPI indicators (example)
 style: "style.css"
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  An early prototype that uses MADE-UP numbers to show how indicator charts
+  could work. It:
+    1. Loads two small example spreadsheets: the numbers, and a "metadata"
+       file describing each indicator (title, chart type, sort order).
+    2. Warns if any indicator is missing its description.
+    3. Draws one chart card per indicator, with margin-of-error lines, and
+       labels unreliable (suppressed) estimates instead of showing them.
+    4. Shows the full data table at the bottom.
+  The numbered comments in each code block below match these steps.
+-->
+
 # AANHPI indicators (example data)
 
 Every chart on this page is drawn from two files in `src/data/`:
@@ -138,6 +152,7 @@ display(html`<div class="grid grid-cols-2">${cards}</div>`);
 ## The data behind the charts
 
 ```js
+// 6. The full example data as a sortable table.
 Inputs.table(data, {
   columns: ["indicator_id", "group_label", "estimate", "moe90", "cv", "n_unweighted", "suppressed", "note_code"]
 })

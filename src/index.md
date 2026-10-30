@@ -3,11 +3,28 @@ theme: air
 toc: false
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  The dashboard's home page. It is still mostly the Observable Framework
+  starter page, with the dashboard's title and color scheme added:
+    1. A large title banner ("hero").
+    2. Two sample charts using built-in demo data (stock prices and penguin
+       measurements), not AANHPI data.
+    3. "Next steps" cards linking to Observable Framework documentation.
+    4. Page styling (colors, borders, title size) at the bottom.
+-->
+
+<!-- Title banner at the top of the page. -->
+
 <div class="hero">
   <h1>State of AANHPIs 2026 Dashboard</h1>
   <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
   <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
+
+<!-- Two sample charts side by side, using demo data that comes with Observable:
+     a line chart of Apple stock prices and a scatter plot of penguin sizes. -->
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
   <div class="card">${
@@ -42,6 +59,8 @@ toc: false
 
 ## Next steps
 
+<!-- Starter-template cards with links to Observable Framework help pages. -->
+
 Here are some ideas of things you could try…
 
 <div class="grid grid-cols-4">
@@ -68,8 +87,12 @@ Here are some ideas of things you could try…
   </div>
 </div>
 
+<!-- Page styling. Colors used: #103f48 (dark teal, text), #ff4f00 (orange,
+     links and highlights), #7fb6a4 (light green, borders), #ffffff (white). -->
+
 <style>
 
+/* Theme colors for this page: background, text, highlight and muted text. */
 :root {
   --theme-background: #ffffff;
   --theme-background-alt: #ffffff;
@@ -78,6 +101,7 @@ Here are some ideas of things you could try…
   --theme-foreground-muted: #103f48;
 }
 
+/* Page background, text color, link color and divider-line color. */
 body {
   background: #ffffff;
   color: #103f48;
@@ -91,12 +115,14 @@ hr {
   border-color: #7fb6a4;
 }
 
+/* Cards: white boxes with a light green border and a thicker top edge. */
 .card {
   background: #ffffff;
   border: 1px solid #7fb6a4;
   border-top: 4px solid #7fb6a4;
 }
 
+/* Title banner: centered, with a very large title and smaller subtitle. */
 .hero {
   display: flex;
   flex-direction: column;
@@ -127,6 +153,7 @@ hr {
   color: var(--theme-foreground-muted);
 }
 
+/* On wider screens, cap the title size at 90px. */
 @media (min-width: 640px) {
   .hero h1 {
     font-size: 90px;

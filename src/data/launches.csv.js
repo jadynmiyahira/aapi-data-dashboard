@@ -1,6 +1,20 @@
+// =============================================================================
+// WHAT THIS FILE DOES (plain-language summary)
+// -----------------------------------------------------------------------------
+// Data loader for the "Example dashboard" page (part of the Observable
+// Framework starter template, not AANHPI data). Each time the site is built it:
+//   1. Downloads a public catalog of every rocket launch in history.
+//   2. Keeps only the date, the launching country, and the rocket family.
+//   3. Groups smaller countries and rocket families into "Other" so the
+//      charts stay readable.
+//   4. Saves the result as launches.csv for the page to use.
+// =============================================================================
+
+// Tools for reading/writing spreadsheet text and reading dates.
 import {csvFormat, tsvParse} from "d3-dsv";
 import {utcParse} from "d3-time-format";
 
+// Helper: download a web address as text. Stops the build if the download fails.
 async function text(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
