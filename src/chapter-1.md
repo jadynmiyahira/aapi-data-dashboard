@@ -1,4 +1,5 @@
 ---
+theme: air
 title: "Chapter 1: Demographics and Population"
 toc: true
 ---
@@ -19,6 +20,12 @@ toc: true
   Notes like this one, and lines starting with //, are for people reading the
   code. They do not appear on the website.
 -->
+
+<!-- Title banner at the top of the page. -->
+
+<div class="hero">
+  <h1>Demographics and Population</h1>
+</div>
 
 ```js
 // Load the shared helper tools (from src/components/) that find a figure in the
@@ -148,3 +155,74 @@ display(unshown.length
   ? html`<p class="aanhpi-warn">Not shown on this page: ${unshown.map((f) => f.figure_id).join(", ")}. Add them to the block above.</p>`
   : "");
 ```
+
+<!-- Page styling, matching the home page (index.md). Colors used: #103f48 (dark
+     teal, text), #ff4f00 (orange, links and highlights), #7fb6a4 (light green,
+     borders), #ffffff (white). -->
+
+<style>
+
+/* Theme colors for this page: background, text, highlight and muted text. */
+:root {
+  --theme-background: #ffffff;
+  --theme-background-alt: #ffffff;
+  --theme-foreground: #103f48;
+  --theme-foreground-focus: #ff4f00;
+  --theme-foreground-muted: #103f48;
+  /* Bar chart colors: all bars (including negative values) are dark teal. */
+  --aanhpi-bar: #103f48;
+  --aanhpi-bar-negative: #103f48;
+}
+
+/* Page background, text color, link color and divider-line color. */
+body {
+  background: #ffffff;
+  color: #103f48;
+}
+
+a, a:visited {
+  color: #ff4f00;
+}
+
+hr {
+  border-color: #7fb6a4;
+}
+
+/* Cards (each figure is a card): white boxes with a light green border and a
+   thicker top edge. */
+.card {
+  background: #ffffff;
+  border: 1px solid #7fb6a4;
+  border-top: 4px solid #7fb6a4;
+}
+
+/* Title banner: centered, large title. Same look as the home page, but with
+   less space around it so the figures start sooner. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--sans-serif);
+  margin: 1rem 0 3rem;
+  text-wrap: balance;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 1rem 0;
+  padding: 1rem 0;
+  max-width: none;
+  font-size: 10vw;
+  font-weight: 900;
+  line-height: 1;
+  color: #103f48;
+}
+
+/* On wider screens, cap the title size at 64px. */
+@media (min-width: 640px) {
+  .hero h1 {
+    font-size: 64px;
+  }
+}
+
+</style>

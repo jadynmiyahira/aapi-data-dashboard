@@ -69,7 +69,8 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
     marks: [
       Plot.barX(bars, {
         x: "value", y: "row_id",
-        fill: (d) => (d.value < 0 ? "var(--theme-red, #c0392b)" : "var(--theme-foreground-focus, #3b5fc0)"),
+        // A page can set --aanhpi-bar / --aanhpi-bar-negative in its styles to recolor the bars.
+        fill: (d) => (d.value < 0 ? "var(--aanhpi-bar-negative, var(--theme-red, #c0392b))" : "var(--aanhpi-bar, var(--theme-foreground-focus, #3b5fc0))"),
         fillOpacity: (d) => (d.flag === "caution" ? 0.45 : 1)
       }),
       Plot.text(bars, {
