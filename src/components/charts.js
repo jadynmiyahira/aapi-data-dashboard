@@ -59,12 +59,22 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
   const noValue = order.filter((id) => !shown.has(id)).map((id) => labelOf.get(id));
   const longest = Math.max(...order.map((id) => yLabel(id).length));
   const fmt = (v) => formatValue(v, meta.unit);
+  const valueLabel = (d) => `${fmt(d.value)}${d.flag === "caution" ? "*" : ""}`;
+  // Widen the x axis past the longest bars so each value label fits beside its bar
+  // (right of positive bars, left of negative ones) instead of being clipped.
+  const marginLeft = Math.min(320, 12 + longest * 6.2), marginRight = 20;
+  const inner = Math.max(100, width - marginLeft - marginRight);
+  const labelPx = (D) => (D.length ? 10 + 6.5 * Math.max(...D.map((d) => valueLabel(d).length)) : 0);
+  const lo = Math.min(0, ...bars.map((d) => d.value)), hi = Math.max(0, ...bars.map((d) => d.value));
+  const padL = lo < 0 ? labelPx(bars.filter((d) => d.value < 0)) / inner : 0;
+  const padR = hi > 0 ? labelPx(bars.filter((d) => d.value >= 0)) / inner : 0;
+  const span = (hi - lo) / Math.max(0.4, 1 - padL - padR);
   const chart = Plot.plot({
     width,
     height: 30 + 22 * order.length,
-    marginLeft: Math.min(320, 12 + longest * 6.2),
-    marginRight: 70,
-    x: {label: label ?? meta.label, grid: true, tickFormat: meta.unit === "percent" ? (v) => `${v}%` : "~s"},
+    marginLeft,
+    marginRight,
+    x: {label: label ?? meta.label, grid: true, domain: [lo - padL * span, hi + padR * span], tickFormat: meta.unit === "percent" ? (v) => `${v}%` : "~s"},
     y: {label: null, domain: order, tickFormat: yLabel},
     marks: [
       Plot.barX(bars, {
@@ -73,10 +83,13 @@ export function barChart(rows, {series, sortBy, include = notBenchmark, width = 
         fill: (d) => (d.value < 0 ? "var(--aanhpi-bar-negative, var(--theme-red, #c0392b))" : "var(--aanhpi-bar, var(--theme-foreground-focus, #3b5fc0))"),
         fillOpacity: (d) => (d.flag === "caution" ? 0.45 : 1)
       }),
-      Plot.text(bars, {
-        x: "value", y: "row_id", dx: (d) => (d.value < 0 ? -4 : 4),
-        textAnchor: (d) => (d.value < 0 ? "end" : "start"),
-        text: (d) => `${fmt(d.value)}${d.flag === "caution" ? "*" : ""}`
+      // Value labels: dx and textAnchor must be constants, so positive and negative
+      // bars get separate marks (label right of the bar end vs. left of it).
+      Plot.text(bars.filter((d) => d.value >= 0), {
+        x: "value", y: "row_id", dx: 5, textAnchor: "start", text: valueLabel
+      }),
+      Plot.text(bars.filter((d) => d.value < 0), {
+        x: "value", y: "row_id", dx: -5, textAnchor: "end", text: valueLabel
       }),
       Plot.tip(bars, Plot.pointerY({
         x: "value", y: "row_id",
