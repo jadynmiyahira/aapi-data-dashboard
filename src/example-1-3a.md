@@ -1,4 +1,5 @@
 ---
+draft: true  # hidden from the published site and sidebar; still visible in npm run dev
 title: Example — Figure 1.3a from the long file
 ---
 
