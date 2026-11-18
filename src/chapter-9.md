@@ -1,6 +1,6 @@
 ---
 theme: air
-title: "Chapter 9: Civic Participation"
+title: "Chapter 9: Citizenship and Democracy"
 toc: true
 ---
 
@@ -13,7 +13,7 @@ toc: true
 <!-- Title banner at the top of the page. -->
 
 <div class="hero">
-  <h1>Civic Particiation</h1>
+  <h1>Citizenship and Democracy</h1>
 </div>
 
 

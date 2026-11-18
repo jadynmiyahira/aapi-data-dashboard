@@ -1,6 +1,6 @@
 ---
 theme: air
-title: "Chapter 6: Income"
+title: "Chapter 6: Income and Poverty"
 toc: true
 ---
 
@@ -13,7 +13,7 @@ toc: true
 <!-- Title banner at the top of the page. -->
 
 <div class="hero">
-  <h1>Income</h1>
+  <h1>Income and Poverty</h1>
 </div>
 
 
