@@ -92,7 +92,7 @@ for (const id of ["1.1", "1.2"]) {
     const meta = figureMeta(data, id), rows = panel(data, id);
     return figureCard(meta, rows, {title: c.title, body: [
     barChart(rows, {series: c.bar, label: c.barLabel, mark: c.mark, width}),
-    dataTable(rows)
+    dataTable(rows, {filename: `figure-${id}.csv`})
   ]});
   }));
 }
@@ -109,7 +109,7 @@ for (const id of ["1.3a", "1.3c"]) {
     const meta = figureMeta(data, id), rows = panel(data, id);
     return figureCard(meta, rows, {body: [
     barChart(rows, {series: c.bar, width}),
-    dataTable(rows)
+    dataTable(rows, {filename: `figure-${id}.csv`})
   ]});
   }));
 }
@@ -124,7 +124,7 @@ for (const id of ["1.3b", "1.3d"]) {
     const meta = figureMeta(data, id), rows = panel(data, id);
     return figureCard(meta, rows, {body: [
     barChart(rows, {series: c.bar, sortBy: c.sortBy, label: c.barLabel, width}),
-    dataTable(rows)
+    dataTable(rows, {filename: `figure-${id}.csv`})
   ]});
   }));
 }
@@ -140,7 +140,7 @@ for (const id of ["1.4a", "1.4b", "1.4c", "1.5"]) {
   display(tryFigure(id, () => {
     const meta = figureMeta(data, id), rows = panel(data, id);
     return figureCard(meta, rows, {body: [
-    rankTable(rows, {suffix: c.suffix, totalPattern: c.total})
+    rankTable(rows, {suffix: c.suffix, totalPattern: c.total, filename: `figure-${id}.csv`})
   ]});
   }));
 }
