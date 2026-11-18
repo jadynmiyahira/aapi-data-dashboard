@@ -24,7 +24,7 @@ toc: false
 <!-- Title banner at the top of the page. -->
 
 <div class="hero">
-  <h1>State of AANHPIs 2026 Dashboard</h1>
+  <h1>2026 State of AANHPIs Dashboard</h1>
   <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
   <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
@@ -32,6 +32,8 @@ toc: false
 <!-- Two sample charts side by side, using demo data that comes with Observable:
      a line chart of Apple stock prices and a scatter plot of penguin sizes. -->
 
+
+<!--
 <div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
   <div class="card">${
     resize((width) => Plot.plot({
@@ -60,13 +62,17 @@ toc: false
     }))
   }</div>
 </div>
+-->
 
 ---
 
+<!--
 ## Next steps
+-->
 
 <!-- Starter-template cards with links to Observable Framework help pages. -->
 
+<!--
 Here are some ideas of things you could try…
 
 <div class="grid grid-cols-4">
@@ -92,6 +98,8 @@ Here are some ideas of things you could try…
     Visit <a href="https://github.com/observablehq/framework">Framework on GitHub</a> and give us a star. Or file an issue if you’ve found a bug!
   </div>
 </div>
+
+-->
 
 <!-- Page styling. Colors used: #103f48 (dark teal, text), #ff4f00 (orange,
      links and highlights), #7fb6a4 (light green, borders), #ffffff (white). -->
