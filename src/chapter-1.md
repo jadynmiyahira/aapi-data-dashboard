@@ -21,6 +21,12 @@ toc: true
   code. They do not appear on the website.
 -->
 
+<!-- AAPI Data logo, top right of the page (same as the home page). -->
+
+<div class="top-logo">
+  <img src="./assets/AAPI-Data-Horizontal-Logo+Tag-Full-Color.png" alt="AAPI Data logo">
+</div>
+
 <!-- Title banner at the top of the page. -->
 
 <div class="hero">
@@ -202,6 +208,18 @@ hr {
   background: #ffffff;
   border: 1px solid #7fb6a4;
   border-top: 4px solid #7fb6a4;
+}
+
+/* AAPI Data logo: top right, 60px tall (same as the home page). */
+.top-logo {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.top-logo img {
+  height: 60px;
+  width: auto;
+  max-width: 100%;
 }
 
 /* Intro text: let the paragraphs run the full width of the page instead of
