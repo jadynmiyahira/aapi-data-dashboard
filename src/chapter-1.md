@@ -86,9 +86,6 @@ ${chartStyles}
 
 <div class="chapter-intro">
 
-[Example copy] As the fastest-growing and most internally diverse populations in the country, Asian American and Native Hawaiian and Pacific Islander communities reflect a rich history shaped by shifting immigration laws, refugee resettlements, and legacies of colonialism and military presence in the Pacific. With distinct migratory paths, spanning post-1965 professional and family-based immigration, Southeast Asian refugee movements, and Compact of Free Association (COFA)-enabled migration, AA and NHPI communities have unique economic profiles and geographic concentrations. Accurate demographic counts for these groups are an essential civil rights priority, as they directly shape congressional representation, service provision, and funding from public and private agencies. In the past, data aggregation and systemic undercounting have often obscured the full scale and detailed composition of AA and NHPI populations. 
-
-This chapter examines demographic shifts in detail, presenting disaggregated population counts across various Asian and Native Hawaiian and Pacific Islander national origin groups while highlighting key geographic areas experiencing rapid residential growth. To conclude, the chapter situates these findings within the evolving framework of federal data standards, emphasizing the civil rights imperative of ensuring precise demographic enumeration for all AANHPI residents.
 
 </div>
 
