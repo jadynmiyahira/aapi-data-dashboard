@@ -1,4 +1,5 @@
 ---
+draft: true  # hidden from the published site and sidebar; still visible in npm run dev
 theme: air
 title: U.S. demographics
 toc: false
