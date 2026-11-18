@@ -25,8 +25,8 @@ toc: false
 
 <div class="hero">
   <h1>2026 State of AANHPIs Dashboard</h1>
-  <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
-  <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <h2>A partner data dashboard for AAPI Data's comprehensive report on the State of Asian Americans, Native Hawaiians, and Pacific Islanders in the U.S.</h2>
+  <a href="https://aapidata.com/data/state-of-aanhpis-report-2026/">View report<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
 
 <!-- Two sample charts side by side, using demo data that comes with Observable:
