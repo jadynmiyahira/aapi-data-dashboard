@@ -4,19 +4,34 @@ title: U.S. demographics
 toc: false
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  Shows how the U.S. population breaks down by race and Hispanic origin
+  (Census Bureau estimate for July 1, 2025). The page has:
+    1. Four summary cards: total U.S. population and the three largest groups.
+    2. A bar chart of each group's share of the population.
+    3. A table with the exact population and share for every group.
+  The data is prepared by src/data/us-race.csv.js.
+-->
+
 # U.S. racial and ethnic distribution
 
 Resident population, July 1, 2025. Source: [U.S. Census Bureau, Vintage 2025 population estimates](https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/national/asrh/).
 
 ```js
+// Load the population table (one row per race/ethnicity group).
 const race = FileAttachment("data/us-race.csv").csv({typed: true});
 ```
 
 ```js
+// The U.S. total, plus number formats: "1,234,567" for counts and "12.3%" for shares.
 const total = d3.sum(race, (d) => d.population);
 const fmt = d3.format(",");
 const pct = d3.format(".1%");
 ```
+
+<!-- Summary cards: total U.S. population (in millions), then the three largest groups. -->
 
 <div class="grid grid-cols-4">
   <div class="card">
@@ -29,6 +44,9 @@ const pct = d3.format(".1%");
     <span class="muted">${fmt(d.population)}</span>
   </div>`)}
 </div>
+
+<!-- Bar chart: each group's share of the U.S. population, largest first, with the
+     percentage printed at the end of each bar. Resizes to fit the screen. -->
 
 <div class="card">
   ${resize((width) => Plot.plot({
@@ -64,6 +82,8 @@ const pct = d3.format(".1%");
     ]
   }))}
 </div>
+
+<!-- Data table: exact population and share for every group. -->
 
 <div class="card" style="padding: 0;">
   ${Inputs.table(race, {

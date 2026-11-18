@@ -3,6 +3,14 @@ theme: air
 title: Example report
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  An example page from the Observable Framework starter template (not AANHPI
+  data). It shows a report-style layout: mostly written text, with one
+  timeline chart of space-exploration milestones built from data/events.json.
+-->
+
 # A brief history of space exploration
 
 This report is a brief overview of the history and current state of rocket launches and space exploration.
@@ -18,14 +26,17 @@ This led to the launch of the first artificial satellite, Sputnik 1, and the cre
 ## The Space Shuttle era
 
 ```js
+// Load the helper that draws a timeline chart (src/components/timeline.js).
 import {timeline} from "./components/timeline.js";
 ```
 
 ```js
+// Load the list of milestone events (name and year).
 const events = FileAttachment("./data/events.json").json();
 ```
 
 ```js
+// Draw the timeline, 300 pixels tall.
 timeline(events, {height: 300})
 ```
 

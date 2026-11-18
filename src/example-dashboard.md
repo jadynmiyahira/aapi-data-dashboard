@@ -4,6 +4,16 @@ title: Example dashboard
 toc: false
 ---
 
+<!--
+  WHAT THIS PAGE DOES (plain-language summary)
+  ---------------------------------------------------------------------------
+  An example page from the Observable Framework starter template (not AANHPI
+  data). It shows a typical dashboard layout using rocket-launch history:
+  four big-number cards (launches by country), a chart of launches per year,
+  and a chart of the most-used rocket families.
+  The data is prepared by src/data/launches.csv.js.
+-->
+
 # Rocket launches 🚀
 
 <!-- Load and transform the data -->

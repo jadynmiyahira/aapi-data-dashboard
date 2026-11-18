@@ -1,5 +1,22 @@
+// =============================================================================
+// WHAT THIS FILE DOES (plain-language summary)
+// -----------------------------------------------------------------------------
+// Data loader for the "U.S. demographics by state" page. Each time the site is
+// built it:
+//   1. Downloads the latest state population estimates from the U.S. Census
+//      Bureau website.
+//   2. Adds up each state's population across all ages and both sexes.
+//   3. Splits each state's population into seven race/ethnicity groups and
+//      works out each group's share of that state's total.
+//   4. Double-checks that, for every state, the groups add up exactly to the
+//      state's total.
+//   5. Saves the result as a table (us-race-by-state.csv) for the page to use.
+// =============================================================================
+
+// Tools for reading and writing spreadsheet (CSV) text.
 import {csvParse, csvFormat} from "d3-dsv";
 
+// ---- Where the data comes from ----------------------------------------------
 // U.S. Census Bureau, Vintage 2025 state population estimates by age, sex,
 // race, and Hispanic origin (alldata6: six race groups). We use the July 1,
 // 2025 estimate, both sexes (SEX = 0), summed across single years of age.
@@ -7,8 +24,10 @@ import {csvParse, csvFormat} from "d3-dsv";
 const url =
   "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/state/asrh/sc-est2025-alldata6.csv";
 
+// ---- The seven groups shown on the page --------------------------------------
 // Mutually exclusive groups: Hispanic of any race (ORIGIN = 2), plus
 // non-Hispanic (ORIGIN = 1) race-alone groups and two or more races.
+// "origin" and "race" are the Census Bureau's codes for each group.
 const groups = [
   {group: "White", origin: "1", race: "1"},
   {group: "Hispanic or Latino", origin: "2"},
@@ -19,10 +38,14 @@ const groups = [
   {group: "Native Hawaiian and Other Pacific Islander", origin: "1", race: "5"}
 ];
 
+// ---- Step 1: Download the Census file ----------------------------------------
+// Keep only the "both sexes" rows. If the download fails, the build stops.
 const response = await fetch(url);
 if (!response.ok) throw new Error(`fetch failed: ${response.status} ${url}`);
 const rows = csvParse(await response.text()).filter((d) => d.SEX === "0");
 
+// ---- Step 2: Add up totals per state and per state + group --------------------
+// The file has one row per age, so we keep running totals as we go.
 const totals = new Map();
 const counts = new Map();
 for (const d of rows) {
@@ -36,6 +59,9 @@ for (const d of rows) {
   }
 }
 
+// ---- Step 3: Build one row per state and group, with its share ---------------
+// Safety check: each state's groups must add up exactly to that state's total;
+// if not, the build stops.
 const data = [];
 for (const [state, total] of totals) {
   let sum = 0;
@@ -47,4 +73,5 @@ for (const [state, total] of totals) {
   if (sum !== total) throw new Error(`${state}: groups sum to ${sum}, expected ${total}`);
 }
 
+// ---- Step 4: Save the table for the page ---------------------------------------
 process.stdout.write(csvFormat(data));
