@@ -10,7 +10,7 @@ toc: false
   Shows how the U.S. population breaks down by race and Hispanic origin
   (Census Bureau estimate for July 1, 2025). The page has:
     1. Four summary cards: total U.S. population and the three largest groups.
-    2. A bar chart of each group's share of the population.
+    2. A dot chart of each group's share of the population.
     3. A table with the exact population and share for every group.
   The data is prepared by src/data/us-race.csv.js.
 -->
@@ -45,8 +45,8 @@ const pct = d3.format(".1%");
   </div>`)}
 </div>
 
-<!-- Bar chart: each group's share of the U.S. population, largest first, with the
-     percentage printed at the end of each bar. Resizes to fit the screen. -->
+<!-- Dot chart: each group's share of the U.S. population, largest first, with a
+     thin line from 0 to each dot and the percentage printed beside the dot. Resizes to fit the screen. -->
 
 <div class="card">
   ${resize((width) => Plot.plot({
@@ -59,14 +59,19 @@ const pct = d3.format(".1%");
     x: {label: "Share of population (%)", percent: true, grid: true},
     y: {label: null},
     marks: [
-      Plot.barX(race, {
+      Plot.ruleY(race, {
+        x1: 0,
+        x2: "share",
+        y: "group",
+        stroke: "var(--theme-foreground-focus)",
+        strokeWidth: 2
+      }),
+      Plot.dot(race, {
         x: "share",
         y: "group",
         sort: {y: "-x"},
+        r: 5,
         fill: "var(--theme-foreground-focus)",
-        rx: 4,
-        insetTop: 1,
-        insetBottom: 1,
         tip: {format: {population: ",", share: ".1%", x: false, y: false}},
         channels: {group: "group", population: "population", share: "share"}
       }),
@@ -75,7 +80,7 @@ const pct = d3.format(".1%");
         y: "group",
         text: (d) => pct(d.share),
         textAnchor: "start",
-        dx: 6,
+        dx: 10,
         fill: "var(--theme-foreground)"
       }),
       Plot.ruleX([0])

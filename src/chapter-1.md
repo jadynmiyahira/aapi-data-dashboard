@@ -13,7 +13,7 @@ toc: true
        src/data/aanhpi.json.js).
     2. Lists which figures belong to Chapter 1 and which number to chart for
        each (the settings block below).
-    3. Draws each figure as a card: a title, a bar chart and/or a table, and
+    3. Draws each figure as a card: a title, a dot chart and/or a table, and
        footnotes about data quality.
     4. Warns at the bottom if the data has a Chapter 1 figure this page does
        not show yet.
@@ -29,7 +29,7 @@ toc: true
 
 ```js
 // Load the shared helper tools (from src/components/) that find a figure in the
-// data and draw its cards, bar charts and tables. Then load the data itself.
+// data and draw its cards, dot charts and tables. Then load the data itself.
 import {panel, figureMeta} from "./components/aanhpi.js";
 import {figureCard, barChart, dataTable, rankTable, tryFigure, chartStyles} from "./components/charts.js";
 const data = await FileAttachment("data/aanhpi.json").json();
@@ -44,17 +44,17 @@ const data = await FileAttachment("data/aanhpi.json").json();
 //
 // What each setting means:
 //   title    - a title to show instead of a placeholder title in the data
-//   bar      - the data series (column) to draw as bars
-//   barLabel - the label under the bar chart
-//   mark     - "dot" to draw a dot plot instead of bars (leave out for bars)
-//   sortBy   - order bars by a different series (here, 2024 population)
+//   bar      - the data series (column) to chart
+//   barLabel - the label under the chart
+//   mark     - "bar" to draw bars instead of dots (leave out for dots)
+//   sortBy   - order groups by a different series (here, 2024 population)
 //   suffix   - for "top 5 states" tables: which measure to show
 //   total    - for "top 5 states" tables: pattern for the group-size column
 // ---------------------------------------------------------------------------
 const CH1 = {
   "1.1": {
     title: "Population by race/ethnicity, alone or in combination, 2010, 2020 and 2024 (provisional title)",
-    bar: "1_1_change_2020_2024", barLabel: "Change, 2020–2024 (%)", mark: "dot"
+    bar: "1_1_change_2020_2024", barLabel: "Change, 2020–2024 (%)"
   },
   "1.2": {
     title: "Population by race/ethnicity, race alone, 2010, 2020 and 2024 (provisional title)",
@@ -83,7 +83,7 @@ Figures in this chapter come from `${data.source_file}`. Values flagged * rest o
 
 ```js
 // Figures 1.1 and 1.2: for each one, look up its details and rows in the data,
-// then draw a card with a bar chart and the full data table underneath.
+// then draw a card with a dot chart and the full data table underneath.
 // tryFigure means that if one figure has a problem (for example a renamed
 // series), the page shows a short message for that figure instead of breaking.
 for (const id of ["1.1", "1.2"]) {
@@ -102,7 +102,7 @@ for (const id of ["1.1", "1.2"]) {
 
 ```js
 // Figures 1.3a (Asian) and 1.3c (NHPI): each detailed group's share of the
-// total, as a bar chart plus the data table.
+// total, as a dot chart plus the data table.
 for (const id of ["1.3a", "1.3c"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -117,7 +117,7 @@ for (const id of ["1.3a", "1.3c"]) {
 
 ```js
 // Figures 1.3b (Asian) and 1.3d (NHPI): percent change 2020–2024 for each
-// detailed group, with bars ordered by 2024 population size, plus the table.
+// detailed group, with groups ordered by 2024 population size, plus the table.
 for (const id of ["1.3b", "1.3d"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
@@ -170,7 +170,7 @@ display(unshown.length
   --theme-foreground: #103f48;
   --theme-foreground-focus: #ff4f00;
   --theme-foreground-muted: #103f48;
-  /* Bar chart colors: all bars (including negative values) are dark teal. */
+  /* Chart colors: all dots and lines (including negative values) are dark teal. */
   --aanhpi-bar: #103f48;
   --aanhpi-bar-negative: #103f48;
 }

@@ -12,7 +12,7 @@ title: Example — Figure 1.3a from the long file
     2. Removes averages/totals so only individual groups are charted.
     3. Shows a warning if the rows mix race definitions that should not be
        charted together.
-    4. Draws a horizontal bar chart (small-sample "caution" values are lighter).
+    4. Draws a dot chart (small-sample "caution" values are lighter).
     5. Adds footnotes about data quality, sources and data year.
 -->
 
@@ -29,7 +29,7 @@ const meta = figureMeta(data, "1.3a");
 const rows = panel(data, "1.3a");
 const check = basisCheck(rows);
 // The panel includes an "Asian American Average" row (share = 100); drop totals
-// and benchmarks from a share-of-total bar chart.
+// and benchmarks from a share-of-total chart.
 const bars = chartRows(rows, "1_3_share_of_asian_total_pct")
   .filter((d) => !d.is_benchmark && d.entity_type !== "total" && d.value < 100);
 ```
@@ -42,16 +42,20 @@ const bars = chartRows(rows, "1_3_share_of_asian_total_pct")
 ${check.status === "incompatible" ? html`<p class="warning">These rows mix source-defined and ACS bases and should not share a chart.</p>` : ""}
 
 ```js
-// The bar chart: one bar per group, longest at the top. Bars for "caution"
-// (small-sample) values are drawn lighter. Hovering a bar shows its value,
+// The dot chart: one dot per group (with a thin line from 0), largest at the
+// top. Dots for "caution" (small-sample) values are drawn lighter. Hovering a dot shows its value,
 // race definition, and any note.
 Plot.plot({
   marginLeft: 140,
   x: {label: "Share of Asian American population (%)", grid: true},
   y: {label: null},
   marks: [
-    Plot.barX(bars, {
-      x: "value", y: "entity_label", sort: {y: "-x"},
+    Plot.ruleY(bars, {
+      x1: 0, x2: "value", y: "entity_label", strokeWidth: 2,
+      strokeOpacity: (d) => (d.flag === "caution" ? 0.45 : 1)
+    }),
+    Plot.dot(bars, {
+      x: "value", y: "entity_label", sort: {y: "-x"}, r: 5, fill: "currentColor",
       fillOpacity: (d) => (d.flag === "caution" ? 0.45 : 1),
       tip: {format: {x: (v) => `${v}%`}},
       title: (d) => `${d.entity_label}: ${d.value}%\n${d.basis}${d.note ? `\n${d.note}` : ""}`

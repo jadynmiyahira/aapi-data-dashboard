@@ -12,7 +12,7 @@ toc: false
   estimate for July 1, 2025). The page has:
     1. A drop-down menu to choose a state (starts on California).
     2. Four summary cards: the state's population and its three largest groups.
-    3. A bar chart of each group's share of the state, with a thin line
+    3. A dot chart of each group's share of the state, with a thin line
        marking the U.S. share for comparison.
     4. A table with the exact numbers.
   Everything updates automatically when a different state is chosen.
@@ -71,14 +71,14 @@ const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
   </div>`)}
 </div>
 
-<!-- Bar chart: each group's share of the chosen state (bars), with a thin
+<!-- Dot chart: each group's share of the chosen state (dots), with a thin
      vertical line showing the U.S. share for comparison. Hovering shows the
      population and both shares. Resizes to fit the screen. -->
 
 <div class="card">
   ${resize((width) => Plot.plot({
     title: `Share of ${state} population by race and Hispanic origin`,
-    subtitle: html`Bars show ${state}; <span style="display: inline-block; width: 2px; height: 0.9em; vertical-align: -0.1em; background: var(--theme-foreground);"></span> marks the U.S. share. Race groups are non-Hispanic; Hispanic or Latino may be of any race.`,
+    subtitle: html`Dots show ${state}; <span style="display: inline-block; width: 2px; height: 0.9em; vertical-align: -0.1em; background: var(--theme-foreground);"></span> marks the U.S. share. Race groups are non-Hispanic; Hispanic or Latino may be of any race.`,
     width,
     height: 320,
     marginLeft: 260,
@@ -86,13 +86,18 @@ const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
     x: {label: "Share of population (%)", percent: true, grid: true},
     y: {label: null, domain: groups},
     marks: [
-      Plot.barX(selected, {
+      Plot.ruleY(selected, {
+        x1: 0,
+        x2: "share",
+        y: "group",
+        stroke: "var(--theme-foreground-focus)",
+        strokeWidth: 2
+      }),
+      Plot.dot(selected, {
         x: "share",
         y: "group",
-        fill: "var(--theme-foreground-focus)",
-        rx: 4,
-        insetTop: 1,
-        insetBottom: 1
+        r: 5,
+        fill: "var(--theme-foreground-focus)"
       }),
       Plot.tickX(selected, {
         x: "usShare",
@@ -105,7 +110,7 @@ const largest = d3.sort(selected, (d) => -d.share).slice(0, 3);
         y: "group",
         text: (d) => pct(d.share),
         textAnchor: "start",
-        dx: 6,
+        dx: 10,
         fill: "var(--theme-foreground)",
         stroke: "var(--theme-background-alt)",
         strokeWidth: 4,

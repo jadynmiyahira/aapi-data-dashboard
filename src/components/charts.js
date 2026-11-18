@@ -121,9 +121,10 @@ export async function downloadPng(svg, {title = "", filename = "chart.png", scal
  * Horizontal bar chart of one series.
  *  sortBy: another series slug to order bars by (descending); default is the value itself.
  *  include: row filter; default drops benchmarks and totals.
- *  mark: "bar" (default) or "dot" for a dot plot (one dot per group at its value).
+ *  mark: "dot" (default) for a dot plot (one dot per group, with a thin line from 0),
+ *        or "bar" for bars.
  */
-export function barChart(rows, {series, sortBy, include = notBenchmark, width = 640, label, mark = "bar"} = {}) {
+export function barChart(rows, {series, sortBy, include = notBenchmark, width = 640, label, mark = "dot"} = {}) {
   const meta = seriesList(rows).find((s) => s.slug === series);
   if (!meta) throw new Error(`barChart: series ${series} is not in this panel`);
   const bars = chartRows(rows, series).filter(include);

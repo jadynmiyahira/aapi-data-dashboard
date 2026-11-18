@@ -76,11 +76,9 @@ function indicatorChart(id, width) {
   const tooltip = (d) =>
     `${d.group_label}\n${fmt(d.estimate)} (margin of error ±${fmt(d.moe90)})\nSample size: ${d.n_unweighted.toLocaleString()}`;
 
-  // Chart type also comes from the metadata: "dot" or (default) "bar".
-  const mainMark =
-    m.chart_type === "dot"
-      ? Plot.dot(shown, {y: "group_label", x: "estimate", fill: "table", r: 6, title: tooltip})
-      : Plot.barX(shown, {y: "group_label", x: "estimate", fill: "table", title: tooltip});
+  // Every indicator is drawn as a dot plot. (The chart_type column in the
+  // metadata is no longer used: "bar" rows are drawn as dots too.)
+  const mainMark = Plot.dot(shown, {y: "group_label", x: "estimate", fill: "table", r: 6, title: tooltip});
 
   return Plot.plot({
     width,
@@ -94,14 +92,14 @@ function indicatorChart(id, width) {
     y: {label: null, domain: order.map((d) => d.group_label)},
     color: {domain: ["Asian", "NHPI"], legend: true},
     marks: [
-      mainMark,
-      // Margin-of-error whiskers
+      // Margin-of-error whiskers (drawn first, so the dots sit on top)
       Plot.ruleY(shown, {
         y: "group_label",
         x1: (d) => d.estimate - d.moe90,
         x2: (d) => d.estimate + d.moe90,
         strokeWidth: 1.5
       }),
+      mainMark,
       // Value labels at the end of each whisker
       Plot.text(shown, {
         y: "group_label",
