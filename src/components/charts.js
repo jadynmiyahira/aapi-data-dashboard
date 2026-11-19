@@ -15,8 +15,11 @@ export const notBenchmark = (d) => !d.is_benchmark && d.entity_type !== "total";
 /**
  * A titled card: title, cautions from the figure metadata, the body, footnotes.
  * `title` overrides a placeholder title in the data.
+ * `logo` (an image URL) puts that logo in the top right corner of the image
+ * saved by "Download PNG". It is not shown in the card on the page.
+ * The saved image also gets the figure's source line at the bottom.
  */
-export function figureCard(meta, rows, {title, body = []} = {}) {
+export function figureCard(meta, rows, {title, body = [], logo} = {}) {
   const shown = PLACEHOLDER.test(meta.figure_title) || !meta.figure_title ? (title ?? meta.figure_title) : meta.figure_title;
   const provisional = shown !== meta.figure_title;
   const notes = footnotes(meta, rows);
@@ -36,6 +39,8 @@ export function figureCard(meta, rows, {title, body = []} = {}) {
     const button = html`<button type="button" class="aanhpi-download">Download PNG</button>`;
     button.onclick = () => downloadPng(card.querySelector(PLOT_SVG), {
       title: shown,
+      logo,
+      source: notes.find((l) => l.startsWith("Source:")),
       filename: `figure-${meta.figure_id}.png`
     });
     card.querySelector("h2").after(button);
@@ -51,12 +56,14 @@ const INLINE_STYLES = ["fill", "fill-opacity", "stroke", "stroke-opacity", "stro
   "opacity", "font-family", "font-size", "font-weight", "font-variant", "text-anchor", "dominant-baseline"];
 
 /**
- * Save a Plot chart as a PNG file, with the figure title above it.
+ * Save a Plot chart as a PNG file, with the figure title above it, and
+ * optionally a logo (`logo`, an image URL) in the top right corner and a
+ * source line (`source`, text) below the chart.
  * Works by copying the chart, writing its on-screen colors and fonts directly
  * onto each shape (CSS variables don't carry into an image), drawing it onto a
  * canvas at 2x resolution, and downloading the result.
  */
-export async function downloadPng(svg, {title = "", filename = "chart.png", scale = 2} = {}) {
+export async function downloadPng(svg, {title = "", logo, source = "", filename = "chart.png", scale = 2} = {}) {
   const {width, height} = svg.getBoundingClientRect();
   const clone = svg.cloneNode(true);
   const src = [svg, ...svg.querySelectorAll("*")];
@@ -78,33 +85,53 @@ export async function downloadPng(svg, {title = "", filename = "chart.png", scal
   const color = pageStyle.color;
   const background = getComputedStyle(document.body).backgroundColor || "#ffffff";
 
-  // Wrap the title to the chart width.
-  const pad = 16, titleSize = 16, lineHeight = 22;
+  // Load the logo, if any, and size it 40px tall.
+  const pad = 16, titleSize = 16, lineHeight = 22, logoHeight = 40;
+  const logoImg = logo ? await loadImage(logo) : null;
+  const logoWidth = logoImg ? logoHeight * logoImg.naturalWidth / logoImg.naturalHeight : 0;
+  const logoSpace = logoImg ? logoWidth + pad : 0;
+
+  // Wrap the title to the chart width, leaving room for the logo on the right.
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.font = `600 ${titleSize}px ${font}`;
-  const lines = [];
-  for (const word of String(title).split(/\s+/).filter(Boolean)) {
-    const last = lines[lines.length - 1];
-    if (last && ctx.measureText(`${last} ${word}`).width <= width - 2 * pad + 0.5) lines[lines.length - 1] = `${last} ${word}`;
-    else lines.push(word);
-  }
-  const titleHeight = lines.length ? pad + lines.length * lineHeight : 0;
+  // Split text into lines no wider than maxWidth, using the current font.
+  const wrap = (text, maxWidth) => {
+    const out = [];
+    for (const word of String(text).split(/\s+/).filter(Boolean)) {
+      const last = out[out.length - 1];
+      if (last && ctx.measureText(`${last} ${word}`).width <= maxWidth + 0.5) out[out.length - 1] = `${last} ${word}`;
+      else out.push(word);
+    }
+    return out;
+  };
+  const lines = wrap(title, width - 2 * pad - logoSpace);
+  const titleHeight = Math.max(lines.length ? pad + lines.length * lineHeight : 0, logoImg ? logoHeight + pad : 0);
 
-  canvas.width = Math.ceil((width + 2 * pad) * scale);
-  canvas.height = Math.ceil((height + titleHeight + 2 * pad) * scale);
+  // Wrap the source line (smaller text) to the chart width.
+  const sourceSize = 12, sourceLineHeight = 16;
+  ctx.font = `400 ${sourceSize}px ${font}`;
+  const sourceLines = source ? wrap(source, width) : [];
+  const sourceHeight = sourceLines.length ? pad + sourceLines.length * sourceLineHeight : 0;
+
+  const fullWidth = width + 2 * pad, fullHeight = titleHeight + height + sourceHeight + 2 * pad;
+  canvas.width = Math.ceil(fullWidth * scale);
+  canvas.height = Math.ceil(fullHeight * scale);
   ctx.scale(scale, scale);
   ctx.fillStyle = background;
-  ctx.fillRect(0, 0, width + 2 * pad, height + titleHeight + 2 * pad);
+  ctx.fillRect(0, 0, fullWidth, fullHeight);
   ctx.fillStyle = color;
-  ctx.font = `600 ${titleSize}px ${font}`;
   ctx.textBaseline = "top";
+  ctx.font = `600 ${titleSize}px ${font}`;
   lines.forEach((l, i) => ctx.fillText(l, pad, pad + i * lineHeight));
+  if (logoImg) ctx.drawImage(logoImg, width + pad - logoWidth, pad, logoWidth, logoHeight);
+  ctx.font = `400 ${sourceSize}px ${font}`;
+  const sourceTop = pad + titleHeight + height + pad;
+  sourceLines.forEach((l, i) => ctx.fillText(l, pad, sourceTop + i * sourceLineHeight));
 
   const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)], {type: "image/svg+xml;charset=utf-8"}));
   try {
-    const img = new Image();
-    await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; img.src = url; });
+    const img = await loadImage(url);
     ctx.drawImage(img, pad, pad + titleHeight, width, height);
   } finally {
     URL.revokeObjectURL(url);
@@ -115,6 +142,16 @@ export async function downloadPng(svg, {title = "", filename = "chart.png", scal
   a.download = filename;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/** Load an image from a URL and wait until it is ready to draw. */
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
 /**

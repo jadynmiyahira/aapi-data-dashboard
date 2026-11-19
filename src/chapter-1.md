@@ -96,11 +96,14 @@ ${chartStyles}
 // then draw a card with a dot chart and the full data table underneath.
 // tryFigure means that if one figure has a problem (for example a renamed
 // series), the page shows a short message for that figure instead of breaking.
+// The first card (figure 1.1) gets the triangle AAPI Data logo in the top
+// right corner of its downloaded PNG. The logo is not shown on the page.
+const triangleLogo = await FileAttachment("assets/Triangle-Only-AAPI-Data-Logo-Mark-Full-Color.png").url();
 for (const id of ["1.1", "1.2"]) {
   const c = CH1[id];
   display(tryFigure(id, () => {
     const meta = figureMeta(data, id), rows = panel(data, id);
-    return figureCard(meta, rows, {title: c.title, body: [
+    return figureCard(meta, rows, {title: c.title, logo: id === "1.1" ? triangleLogo : null, body: [
     barChart(rows, {series: c.bar, label: c.barLabel, mark: c.mark, width}),
     dataTable(rows, {filename: `figure-${id}.csv`})
   ]});
