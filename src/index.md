@@ -15,10 +15,12 @@ toc: false
     4. Page styling (colors, borders, title size) at the bottom.
 -->
 
-<!-- AAPI Data logo, top right of the page. -->
+<!-- AAPI Data logo, top right of the page. Clicking it opens aapidata.com in a new tab. -->
 
 <div class="top-logo">
-  <img src="./assets/AAPI-Data-Horizontal-Logo+Tag-Full-Color.png" alt="AAPI Data logo">
+  <a href="https://aapidata.com" target="_blank" rel="noopener">
+    <img src="./assets/AAPI-Data-Horizontal-Logo+Tag-Full-Color.png" alt="AAPI Data (opens aapidata.com)">
+  </a>
 </div>
 
 <!-- Title banner at the top of the page. -->
